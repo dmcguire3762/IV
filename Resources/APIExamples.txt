@@ -1,0 +1,37 @@
+
+SENTIMENT ANALYSIS:
+----------------------------------------------------------------------------------------------------------------------------
+Text: Analyzes whole webpage
+
+http://gateway-a.watsonplatform.net/calls/url/URLGetTextSentiment
+http://gateway-a.watsonplatform.net/calls/url/URLGetTextSentiment?apikey=YOUR_API_KEY&url=URL
+
+http://gateway-a.watsonplatform.net/calls/url/URLGetTextSentiment?outputMode=json&apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd&url=http://www.cabot.net/issues/cwa/archives/2015/10/weight-watchers-wtw-the-oprah-effect
+
+
+Targeted: Analyzes webpage with references to specific targeted words
+http://gateway-a.watsonplatform.net/calls/url/URLGetTargetedSentiment?apikey=YOUR_API_KEY&targets=TARGET1|TARGET2&url=URL
+
+http://gateway-a.watsonplatform.net/calls/url/URLGetTargetedSentiment?apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd&targets=PBYI|Puma|Biotech|Biotechnology|&url=http://247wallst.com/healthcare-business/2014/07/23/is-puma-biotech-for-real-again/
+
+KEYWORD EXTRACTION:
+----------------------------------------------------------------------------------------------------------------------------
+http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords
+
+http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords?apikey=YOUR_API_KEY&url=http://www.cnn.com/2009/CRIME/01/13/missing.pilot/index.html
+
+http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords?apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd&url=http://247wallst.com/healthcare-business/2014/07/23/is-puma-biotech-for-real-again/
+http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords?apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd&url=http://www.cabot.net/issues/cwa/archives/2015/10/weight-watchers-wtw-the-oprah-effect&sentiment=1
+
+NEWS:
+----------------------------------------------------------------------------------------------------------------------------
+https://gateway-a.watsonplatform.net/calls/data/GetNews?
+
+https://gateway-a.watsonplatform.net/calls/data/GetNews?outputMode=json&start=now-1d&end=now
+
+https://gateway-a.watsonplatform.net/calls/data/GetNews?outputMode=json&start=now-1d&end=now&q.enriched.url.enrichedTitle.relations.relation.object.entities.entity.type=Company
+
+# All financial related articles from 60 days ago to 30 days ago
+https://gateway-a.watsonplatform.net/calls/data/GetNews?outputMode=json&start=now-60d&end=now-30d&q.enriched.url.taxonomy.taxonomy_.label=finance&return=enriched.url.url%2Cenriched.url.title%2Cenriched.url.keywords&apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd
+
+https://gateway-a.watsonplatform.net/calls/data/GetNews?outputMode=json&start=now-60d&end=now-30d&q.enriched.url.keywords.keyword.text=BURL&q.enriched.url.enrichedTitle.taxonomy.taxonomy_.label=finance&apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd
