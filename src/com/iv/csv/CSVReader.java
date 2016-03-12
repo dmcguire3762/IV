@@ -12,6 +12,14 @@ public class CSVReader {
 		csvFile = new File(filename);
 	}
 	
+	public CSVReader(File file){
+		csvFile = file;
+	}
+	
+	public String getFilename(){
+		return csvFile.getName();
+	}
+	
 	public void open() throws FileNotFoundException{
 		csvScanner = new Scanner(csvFile);
 		csvScanner.useDelimiter("\n");

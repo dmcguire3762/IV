@@ -21,7 +21,7 @@ http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords
 http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords?apikey=YOUR_API_KEY&url=http://www.cnn.com/2009/CRIME/01/13/missing.pilot/index.html
 
 http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords?apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd&url=http://247wallst.com/healthcare-business/2014/07/23/is-puma-biotech-for-real-again/
-http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords?apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd&url=http://www.cabot.net/issues/cwa/archives/2015/10/weight-watchers-wtw-the-oprah-effect&sentiment=1
+http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords?outputMode=json&apikey=72a5f8e6c0e85a47397086542b9e845024bf04bd&url=http://www.cabot.net/issues/cwa/archives/2015/10/weight-watchers-wtw-the-oprah-effect&sentiment=1
 
 NEWS:
 ----------------------------------------------------------------------------------------------------------------------------

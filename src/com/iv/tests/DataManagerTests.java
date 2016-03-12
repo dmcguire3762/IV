@@ -20,7 +20,7 @@ public class DataManagerTests {
 		}
 	}*/
 	
-	@Test
+/*	@Test
 	public void testReadingXigniteNews(){
 		Set<NewsArticle> articles = (Set<NewsArticle>) DataManager.getInstance().getNewsArticlesForDate(new DateTime("2016-2-27"));
 		for(NewsArticle article : articles){
@@ -28,6 +28,20 @@ public class DataManagerTests {
 		}
 		
 		System.out.println("Total # of articles: " + articles.size());
-	}
+	}*/
 
+	/*@Test
+	public void testAddDatesToEvaluatedFiles(){
+		DataManager.addDateToEvaluatedArticles();
+	}*/
+	/*
+	@Test
+	public void testRemoveCarraigeReturns(){
+		DataManager.removeAllCarraigeReturnsFromEvaluatedArticles();
+	}*/
+
+	@Test
+	public void testAddNewLines(){
+		DataManager.addNewLineToEvaluatedArticles();
+	}
 }

@@ -16,6 +16,10 @@ public class AlchemyAPIKey {
 		return transactionCount;
 	}
 	
+	public void setTransactionCount(int count) { 
+		transactionCount = count; 
+	}
+	
 	public String getKey(){
 		return key;
 	}
@@ -44,4 +48,5 @@ public class AlchemyAPIKey {
 			return false;
 		return true;
 	}
+
 }

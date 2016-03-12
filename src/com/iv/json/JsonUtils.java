@@ -3,6 +3,7 @@ package com.iv.json;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 
 import com.google.gson.JsonObject;
@@ -20,11 +21,15 @@ public class JsonUtils {
 		}
 	}
 	
-	static String readFile(String path, Charset encoding) 
+	public static String readFile(String path, Charset encoding) 
 			  throws IOException 
 	{
 	  byte[] encoded = Files.readAllBytes(Paths.get(path));
 	  return new String(encoded, encoding);
+	}
+	
+	public static void writeFile(String path, byte[] bytes) throws IOException{
+		Files.write(Paths.get(path), bytes);
 	}
 	
 	public static JsonObject getJsonObjectFromString(String object){

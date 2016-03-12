@@ -75,4 +75,6 @@ public class ParseManager {
 		populateTickers();
 		return tickerMap;
 	}
+	
+	
 }

@@ -1,5 +1,7 @@
 package com.iv.parse;
 
+import org.joda.time.DateTime;
+
 public class StockParser{
 	public enum DateFrequency{
 		day,
@@ -34,7 +36,7 @@ public class StockParser{
 	}
 	
 	public StockParser(String ticker){
-		this(ticker,0,0,1900,3,1,2016,DateFrequency.day);
+		this(ticker,0,0,1900,DateTime.now().getMonthOfYear(),DateTime.now().getDayOfMonth(),DateTime.now().getYear(),DateFrequency.day);
 	}
 	
 	public String getFormattedURL(){

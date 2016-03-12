@@ -4,7 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public abstract class CSVWriter {
+public class CSVWriter {
 	FileWriter writer = null;
 	String filename = "";
 	private String contents = "";
@@ -13,19 +13,11 @@ public abstract class CSVWriter {
 		this.filename = filename;
 	}
 	
-	public void open(){
-		try {
-			writer = new FileWriter(filename);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void open() throws IOException{
+		writer = new FileWriter(filename);
 	}
 	
 	public void addLine(List<String> params){
-		if(writer == null){
-			throw new RuntimeException("open file writer");
-		}
-	
 		for(int i = 0; i < params.size(); i++){
 			contents += params.get(i);
 			if(i != params.size() - 1){
@@ -33,7 +25,11 @@ public abstract class CSVWriter {
 			}
 		}
 		
-		contents += "\r\n";		
+		contents += "\n";		
+	}
+	
+	public void addLine(String line){
+		contents += line;
 	}
 	
 	public void write(){

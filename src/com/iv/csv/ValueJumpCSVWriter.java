@@ -1,5 +1,6 @@
 package com.iv.csv;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -17,7 +18,12 @@ public class ValueJumpCSVWriter extends CSVWriter{
 
 		System.out.println("Writing " + this.filename);
 		System.out.println("# of value jumps: " + valueJumps.size());
-		this.open();
+		try {
+			this.open();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 		
 		for(ValueJump valueJump: valueJumps){
 			ArrayList<String> fields = new ArrayList<String>();

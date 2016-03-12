@@ -57,6 +57,9 @@ public class RESTManager {
 
 	private static String getApiKey(AlchemyAPI api) {
 		for(AlchemyAPIKey key : alchemyAPIKeys){
+			if(key.getTransactionCount() <= 0){
+				key.setTransactionCount(requestTransactionCount(key.getKey()));
+			}
 			if(key.getTransactionCount() < transactionLimit){
 				key.addTransactions(api.getNumTransactions());
 				return key.getKey();
@@ -67,10 +70,22 @@ public class RESTManager {
 	}
 	
 	
-	public static JsonObject getRequest(AlchemyAPI api){
+	private static int requestTransactionCount(String key) {
+		String url = "http://access.alchemyapi.com/calls/info/GetAPIKeyInfo?apikey=" + key + "&outputMode=json";
+		JsonObject response = getRequest(url);
+		return response.get("consumedDailyTransactions").getAsInt();
+	}
+	
+	public static synchronized JsonObject getRequest(String url){
 		try{
 			System.out.println("calling getRequest");
-			URL restServiceURL = new URL(getAlchemyUrl(api));
+			URL restServiceURL = null;
+			try{
+				restServiceURL = new URL(url);
+			} catch( MalformedURLException ex ){
+				System.out.println(url);
+				throw new RuntimeException(ex);
+			}
 	
 			HttpURLConnection httpConnection = (HttpURLConnection) restServiceURL.openConnection();
 			httpConnection.setRequestMethod("GET");
@@ -90,6 +105,11 @@ public class RESTManager {
 			}
 	
 			httpConnection.disconnect();
+			
+			if(doc.contains("daily-transaction-limit-exceeded")){
+				throw new RuntimeException("Daily transaction limit exceeded - not able to proceed");
+			}
+			
 			return JsonUtils.getJsonObjectFromString(doc);
 			
 		} catch (MalformedURLException e) {
@@ -99,5 +119,9 @@ public class RESTManager {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static JsonObject getRequest(AlchemyAPI api){
+		return getRequest(getAlchemyUrl(api));
 	}
 }

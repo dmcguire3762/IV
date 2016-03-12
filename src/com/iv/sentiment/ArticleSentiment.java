@@ -19,7 +19,6 @@ import com.iv.rest.RESTManager.AlchemyService;
 public class ArticleSentiment implements AlchemyAPI{
 	private final NewsArticle article;
 	private HashMap<String, Double> keywordSentimentMap;
-	private boolean evaluated = false;
 	
 	public ArticleSentiment(NewsArticle article) {
 		this.article = article;
@@ -31,16 +30,20 @@ public class ArticleSentiment implements AlchemyAPI{
 	}
 	
 	public Map<String, Double> getKeywordSentimentMap(){
+		if(keywordSentimentMap == null){
+			evaluate();
+		}
+		
 		return keywordSentimentMap;
 	}
 	
-	private void evaluate(){
-		if(evaluated){
+	public void evaluate(){
+		if(keywordSentimentMap != null){
 			return;
 		}
 		
-		keywordSentimentMap = readFromFile();
-		if(keywordSentimentMap == null){
+		readFromFile();
+		if(keywordSentimentMap == null && article.getURL() != null){
 			keywordSentimentMap = new HashMap<String, Double>();
 			JsonObject root = RESTManager.getRequest(this);
 			if(root != null){
@@ -70,9 +73,9 @@ public class ArticleSentiment implements AlchemyAPI{
 		}
 	}
 
-	private HashMap<String, Double> readFromFile() {
+	private void readFromFile() {
 		ArticleSentimentCSVReader reader = new ArticleSentimentCSVReader(getCSVFileName());
-		return reader.getArticleSentimentKeywordMap();
+		keywordSentimentMap = reader.getArticleSentimentKeywordMap();
 	}
 
 	private void writeToFile() {
@@ -113,7 +116,13 @@ public class ArticleSentiment implements AlchemyAPI{
 				.replace("/", "")
 				.replace("*", "")
 				.replace("?", "")
+				.replace("<", "")
+				.replace(">", "")
 				+".csv";
+	}
+
+	public DateTime getDate() {
+		return article.getDate();
 	}
 
 }

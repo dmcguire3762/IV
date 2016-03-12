@@ -1,12 +1,10 @@
 package com.iv.sentiment;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.iv.data.NewsArticle;
+import org.joda.time.DateTime;
 
 public class StockSentiment {
 	private Set<String> urls = new HashSet<String>();
@@ -15,13 +13,15 @@ public class StockSentiment {
 	private final String name;
 	private double score = 0;
 	private boolean reScore = true;
+	private final DateTime date;
 	
 	public String getName(){ return name; }
 	public String getTicker(){ return ticker; }
 	
-	public StockSentiment(String ticker, String name){
+	public StockSentiment(String ticker, String name, DateTime date){
 		this.ticker = ticker;
 		this.name = name;
+		this.date = date;
 	}
 	
 	public void addArticleSentiment(ArticleSentiment article){
@@ -87,5 +87,8 @@ public class StockSentiment {
 		} else {
 			score = unaveragedScore / numSentiments;
 		}
+	}
+	public DateTime getDate() {
+		return date;
 	}
 }

@@ -1,5 +1,6 @@
 package com.iv.csv;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +14,20 @@ public class ArticleSentimentCSVWriter extends CSVWriter{
 	}
 	
 	public void writeArticleSentiment(ArticleSentiment article){
-		this.open();
+		this.addLine(article.getDate().toString() + "\n");
 		for(Map.Entry<String, Double> keywordSentimentPair : article.getKeywordSentimentMap().entrySet()){
 			List<String> params = new ArrayList<String>();
 			params.add(keywordSentimentPair.getKey());
 			params.add(keywordSentimentPair.getValue().toString());
 			this.addLine(params);
 		}
-		
-		this.write();
+
+		try {
+			this.open();
+			this.write();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
