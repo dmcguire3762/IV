@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -21,6 +21,8 @@ public class RealtimeStockStatus extends Thread{
 	private double dateWeightedScore = 0;
 	private HashMap<LocalDate, HashMap<String, HashSet<Double>>> keywordSentimentsByDate = 
 			new HashMap<LocalDate, HashMap<String, HashSet<Double>>>();
+	private Set<String> latestValidKeywords = new HashSet<String>();
+	private HashMap<LocalDate, HashSet<String>> dateArticleUrlMap = new HashMap<LocalDate, HashSet<String>>();
 	
 	public RealtimeStockStatus(String ticker, String companyName){
 		this.ticker = ticker;
@@ -30,11 +32,26 @@ public class RealtimeStockStatus extends Thread{
 	public String getTicker(){ return ticker; }
 	public String getCompanyName(){ return companyName; }
 	public double getWeightedScore(){ return dateWeightedScore; }
-	public ArrayList<Score> getNonAdjustedScores(){ return nonAdjustedScores; }
-	
+	public ArrayList<Score> getNonAdjustedScores(){
+		Collections.sort(nonAdjustedScores, new ScoreDateSorter(-1));
+		return nonAdjustedScores; 
+	}
+	public Set<String> getLatestValidKeywords(){ return latestValidKeywords; }
+	public Map<LocalDate, HashSet<String>> getDateArticleUrlMap(){ return dateArticleUrlMap; }
 	
 	public void addArticleSentiment(ArticleSentiment sentiment){
 		LocalDate sentimentDate = sentiment.getDate().toLocalDate();
+
+		if(!dateArticleUrlMap.containsKey(sentimentDate)){
+			dateArticleUrlMap.put(sentimentDate, new HashSet<String>());
+		}
+		
+		if(dateArticleUrlMap.get(sentimentDate).contains(sentiment.getArticleTitle())){
+			return;
+		} else {
+			dateArticleUrlMap.get(sentimentDate).add(sentiment.getArticleTitle());
+		}
+		
 		if(!keywordSentimentsByDate.containsKey(sentimentDate)){
 			keywordSentimentsByDate.put(sentimentDate, new HashMap<String, HashSet<Double>>());
 		}
@@ -95,8 +112,9 @@ public class RealtimeStockStatus extends Thread{
 	private double calcScoreForKeywordSentimentsMap(HashMap<String, HashSet<Double>> keywordSentimentsForDate) {
 		double unaveragedScore = 0;
 		int numSentiments = 0;
+		Set<String> validKeywords = determineKeywords();
 		for(Map.Entry<String, HashSet<Double>> keywordSentiments : keywordSentimentsForDate.entrySet()){
-			if(keywordSentiments.getValue().size() > 1){
+			if(validKeywords.contains(keywordSentiments.getKey())){
 				for(Double sentiments : keywordSentiments.getValue()){
 					unaveragedScore += sentiments;
 					numSentiments++;
@@ -111,17 +129,64 @@ public class RealtimeStockStatus extends Thread{
 		}
 	}
 	
-	private class ScoreDateSorter implements Comparator<Score>{
+	/**
+	 * Iterate through all dates, and find the keywords that have more than one entry.
+	 * @return all keywords that have more than one entry.
+	 */
+	private Set<String> determineKeywords() {
+		HashMap<String, Integer> keywordCount = new HashMap<String, Integer>();
+		for(Map.Entry<LocalDate, HashMap<String, HashSet<Double>>> keywordSentimentForDate : keywordSentimentsByDate.entrySet()){
+			for(Map.Entry<String, HashSet<Double>> keywordSentiment : keywordSentimentForDate.getValue().entrySet()){
+				if(!keywordCount.containsKey(keywordSentiment.getKey())){
+					keywordCount.put(keywordSentiment.getKey(), 0);
+				}
+				
+				keywordCount.put(keywordSentiment.getKey(), keywordCount.get(keywordSentiment.getKey()) + 1);
+			}
+		}
+		
+		Set<String> validKeywords = new HashSet<String>();
+		for(Map.Entry<String, Integer> keyword : keywordCount.entrySet()){
+			if(keyword.getValue() > 0){
+				validKeywords.add(keyword.getKey());
+			}
+		}
+		
+		validKeywords.add(this.getCompanyName());
+		validKeywords.add(this.getTicker());
+		
+		latestValidKeywords = validKeywords;
+		return validKeywords;
+	}
 
+	private class ScoreDateSorter implements Comparator<Score>{
+		private final int direction;
+		public ScoreDateSorter(int direction){
+			if(direction > 0){
+				this.direction = 1;
+			} else if(direction < 0){
+				this.direction = -1;
+			} else {
+				this.direction = 0;
+			}
+		}
+		
+		public ScoreDateSorter(){
+			direction = 1;
+		}
+		
 		@Override
 		public int compare(Score arg0, Score arg1) {
+			int value;
 			if(arg0.getDate().isBefore(arg1.getDate())){
-				return -1;
+				value = -1;
 			} else if(arg0.getDate().equals(arg1.getDate())){
-				return 0;
+				value = 0;
 			} else {
-				return 1;
+				value = 1;
 			}
+			
+			return value * direction;
 		}
 		
 	}

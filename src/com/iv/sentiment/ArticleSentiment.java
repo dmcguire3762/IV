@@ -92,6 +92,10 @@ public class ArticleSentiment implements AlchemyAPI{
 	public String getArticleUrl() {
 		return article.getURL();
 	}
+	
+	public String getArticleTitle(){
+		return article.getTitle();
+	}
 
 	@Override
 	public AlchemyService getService() {

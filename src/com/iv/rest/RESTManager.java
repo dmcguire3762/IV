@@ -25,6 +25,9 @@ public class RESTManager {
 		alchemyAPIKeys.add(new AlchemyAPIKey("2fc96c1ac120cd2a49959a1eb5f15efec8b06959"));
 		alchemyAPIKeys.add(new AlchemyAPIKey("7e7eff43fc2178fd5cb2ab801903809bf45fb30f"));
 		alchemyAPIKeys.add(new AlchemyAPIKey("932525c6b28f7da2632ec37e916f3da7f0681a5d"));
+		alchemyAPIKeys.add(new AlchemyAPIKey("81ea8486b9ccc67744857e8c2d0a21f6386dfd03"));
+		
+		
 	}
 	
 	public enum AlchemyService{
@@ -78,7 +81,7 @@ public class RESTManager {
 	
 	public static synchronized JsonObject getRequest(String url){
 		try{
-			System.out.println("calling getRequest");
+			System.out.println("Evaluating keywords for " + url);
 			URL restServiceURL = null;
 			try{
 				restServiceURL = new URL(url);

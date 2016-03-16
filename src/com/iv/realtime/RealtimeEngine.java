@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.LocalDate;
+
 import com.iv.data.DataManager;
 import com.iv.data.NewsArticle;
 import com.iv.parse.ParseManager;
@@ -70,11 +72,12 @@ public class RealtimeEngine {
 		tickerStockStatusMap.clear();
 		companyNameStockStatusMap.clear();
 		
+		System.out.println("Populating " + ParseManager.getInstance().getTickerCompanyNameMap().size() + " stocks");
 		for(Map.Entry<String, String> companyNameTicker : ParseManager.getInstance().getTickerCompanyNameMap().entrySet()){
 			RealtimeStockStatus stockStatus = new RealtimeStockStatus(companyNameTicker.getKey(), companyNameTicker.getValue());
 			stockStatuses.add(stockStatus);
-			tickerStockStatusMap.put(companyNameTicker.getValue(), stockStatus);
-			companyNameStockStatusMap.put(companyNameTicker.getKey(), stockStatus);
+			tickerStockStatusMap.put(companyNameTicker.getKey(), stockStatus);
+			companyNameStockStatusMap.put(companyNameTicker.getValue(), stockStatus);
 		}
 		
 		parseAndApplyNewsArticles(DataManager.getInstance().getAllEvaluatedNewsArticles());
@@ -93,6 +96,7 @@ public class RealtimeEngine {
 				continue;
 			}
 			
+			System.out.println(jsonFile.getAbsolutePath());
 			newsArticles.addAll(DataManager.getInstance().getNewsArticlesForFile(jsonFile.getAbsolutePath()));
 			jsonFile.renameTo(new File(evaluatedNewsDirectory + jsonFile.getName()));
 		}
@@ -115,6 +119,7 @@ public class RealtimeEngine {
 	}
 	
 	private void parseAndApplyNewsArticles(Collection<NewsArticle> newsArticles){
+		System.out.println("Parsing " + newsArticles.size() + " articles");
 		List<ArticleParser> parsers = new ArrayList<ArticleParser>();
 		for(NewsArticle article : newsArticles){
 			ArticleParser parser = new ArticleParser(article);
@@ -144,6 +149,25 @@ public class RealtimeEngine {
 					companyNameStockStatusMap.get(keyword).addArticleSentiment(parser.getArticleSentiment());
 				}
 			}
+			
+			String[] titleComponents = parser.getNewsArticle().getTitle().split(" ");
+			for(String titleComponent : titleComponents){
+				if(tickerStockStatusMap.containsKey(titleComponent)){
+					tickerStockStatusMap.get(titleComponent).addArticleSentiment(parser.getArticleSentiment());
+				}
+				
+				if(tickerStockStatusMap.containsKey(titleComponent.replace("(", "").replace(")", ""))){
+					tickerStockStatusMap.get(titleComponent.replace("(", "").replace(")", "")).addArticleSentiment(parser.getArticleSentiment());
+				}
+				
+				if(companyNameStockStatusMap.containsKey(titleComponent)){
+					companyNameStockStatusMap.get(titleComponent).addArticleSentiment(parser.getArticleSentiment());
+				}
+				
+				if(companyNameStockStatusMap.containsKey(titleComponent.replace("(", "").replace(")", ""))){
+					companyNameStockStatusMap.get(titleComponent.replace("(", "").replace(")", "")).addArticleSentiment(parser.getArticleSentiment());
+				}
+			}
 		}
 	}
 
@@ -151,13 +175,28 @@ public class RealtimeEngine {
 		Collections.sort(stockStatuses, new RealtimeStockScoreSorter());
 		for(RealtimeStockStatus stockStatus : stockStatuses){
 			if(stockStatus.getWeightedScore() == 0.0){
-				continue;
+				//continue;
 			}
 			System.out.println(stockStatus.getTicker() + "\t| " + stockStatus.getWeightedScore());
 			System.out.print("\t");
 			for(Score dailyScore : stockStatus.getNonAdjustedScores()){
 				System.out.print(dailyScore.getDate() + " : " + dailyScore.getScore() + " | ");
 			}
+			
+			System.out.println("");
+			System.out.print("\tKeywords: ");
+			for(String keyword : stockStatus.getLatestValidKeywords()){
+				System.out.print(keyword + ",");
+			}
+			
+			System.out.println("\n");
+			for(Map.Entry<LocalDate, HashSet<String>> stockUrlsForDate : stockStatus.getDateArticleUrlMap().entrySet()){
+				System.out.println("\t" + stockUrlsForDate.getKey().toString());
+				for(String url : stockUrlsForDate.getValue()){
+					System.out.println("\t" + url);
+				}
+			}
+			
 			System.out.println("");
 			System.out.println("------------------------------------------------------------------");
 		}

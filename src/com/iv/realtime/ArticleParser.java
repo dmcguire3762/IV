@@ -9,14 +9,14 @@ public class ArticleParser extends Thread{
 	
 	public ArticleParser(NewsArticle newsArticle){
 		article = newsArticle;
+		sentiment = new ArticleSentiment(article);
 	}
 	
 	@Override
 	public void run(){
-		System.out.println("Parsing article - " + article.getTitle());
-		sentiment = new ArticleSentiment(article);
 		sentiment.evaluate();
 	}
 	
 	public ArticleSentiment getArticleSentiment() { return sentiment; }
+	public NewsArticle getNewsArticle(){ return article; }
 }
